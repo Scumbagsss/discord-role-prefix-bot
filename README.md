@@ -1,48 +1,54 @@
-# Discord Role Prefix Bot
+# Discord Role Prefix Manager
 
-> **Portfolio showcase — production source is private and this repository is intentionally non-runnable.**
+**Role-derived nickname normalization for RP factions and teams**
 
-Synchronizes Discord nicknames with role-based clan and faction prefixes.
+![Python](https://img.shields.io/badge/Python-Backend-3776AB?logo=python&logoColor=white) ![Source](https://img.shields.io/badge/Production%20code-private-orange) ![Type](https://img.shields.io/badge/Type-Architecture%20showcase-334155)
 
-## What it demonstrates
+> **Documentation-only portfolio case study.** The source under [`src/public_interface.py`](src/public_interface.py) is intentionally unimplemented and raises `NotImplementedError`. This is **not** a runnable bot, a deployment package or independently verified production evidence.
 
-- Role ID to prefix mapping
-- Automatic nickname sync
-- Old-prefix cleanup
-- Excluded-role rules
-- Discord manager UI
-- Persistent mappings
+## Why this module exists
 
-## Technology
+Roleplay communities often encode a group or clan in a member's nickname. Automated prefix updates become tricky when roles change, users edit their own names, or existing nicknames already contain a managed prefix.
 
-Python • discord.py • JSON storage • Member update events
+**Technology context:** Python, discord.py, role events, JSON settings. These technologies describe the private module's documented domain; public executable implementation is not provided.
 
-## High-level workflow
+## Workflow at a glance
 
-1. Observe role/nickname state
-2. Resolve active managed prefix
-3. Normalize base nickname
-4. Apply synchronized nickname
-5. Persist manager changes
+1. Observe a relevant role or member update
+2. Resolve which configured prefix, if any, should apply
+3. Strip only the previously managed prefix from the display name
+4. Respect exclusions and Discord nickname length/permission limits
+5. Apply the new name and save the mapping change if needed
 
-## Public interface preview
+These stages summarize the public project description; the exact runtime and private integration details cannot be independently verified from the public skeleton.
 
-The public skeleton exposes only the architectural surface:
+## Engineering challenges
 
-- `resolve_prefix(...)`
-- `normalize_nickname(...)`
-- `sync_member_nickname(...)`
-- `update_prefix_mapping(...)`
+| Topic | Why it matters | How it should be verified |
+|---|---|---|
+| Update loops | Changing a nickname may trigger another member update | Make normalization idempotent |
+| Role precedence | Members can hold multiple eligible roles | Define and test a stable priority order |
+| Permission limits | Discord may prevent editing some members | Record failures without retry storms |
+| User name integrity | Unmanaged parts of the nickname must not be lost | Use a reversible base-name strategy |
 
-The production implementations behind these methods are withheld. See [`NOTICE.md`](NOTICE.md).
+## Component boundary
 
-## Repository contents
+```mermaid
+flowchart LR
+    A["Member role update"] --> B["Prefix policy"] --> C["Name normalization"] --> D["Permission check"] --> E["Nickname sync"]
+```
 
-- `src/public_interface.py` — non-runnable interface skeleton;
-- `docs/ARCHITECTURE.md` — high-level design;
-- `examples/config.example.jsonc` — sanitized configuration shape;
-- `LICENSE` — explicit all-rights-reserved notice.
+This diagram is **conceptual**, not a snapshot of private production architecture. See the [design notes](docs/ARCHITECTURE.md) for boundaries, failure scenarios and test ideas.
 
-## Status
+## Repository contents and status
 
-Production-tested private project / portfolio edition.
+- [`src/public_interface.py`](src/public_interface.py) — non-runnable, documented public interface skeleton
+- [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) — engineering design notes (no operational secrets)
+- [`examples/config.example.jsonc`](examples/config.example.jsonc) — illustrative configuration shape, **not** a production configuration
+- [`NOTICE.md`](NOTICE.md) and [`SECURITY.md`](SECURITY.md) — publication/security boundary
+
+**Portfolio role:** Feature-level showcase of a private role/nickname automation module. No public tests, executable deployment or usage metrics are claimed here. For verifiable code, inspect the [FastAPI backend demo](https://github.com/Scumbagsss/priority-access-bot), [ticket workflow](https://github.com/Scumbagsss/advanced-discord-ticket-bot) and [monitoring pipeline](https://github.com/Scumbagsss/dayz-server-monitor-bot).
+
+**Related systems:** [discord-nickname-request-bot](https://github.com/Scumbagsss/discord-nickname-request-bot) · [BOT](https://github.com/Scumbagsss/BOT).
+
+**Contact:** Discord `scumbagsss` · Telegram [@dilarion](https://t.me/dilarion)
